@@ -302,14 +302,24 @@ public class FlixJanelaPrincipal implements ActionListener {
                         "'Forma de Pagamento' alterada com sucesso!");
                 JOptionPane.showMessageDialog(null, consultarFormaPagamento());
 
-            } else if (e.getSource() == conteudosCadastrar) {                 //Cadastrar
+            } else if (e.getSource() == conteudosCadastrar) {                 //CadastrarConteúdos
 
                 int idEpisodio = Integer.parseInt(JOptionPane.showInputDialog("Insira o 'número do episódio' <Caso seja filme, digite '0'>"));
                 int idTemporada = Integer.parseInt(JOptionPane.showInputDialog("Insira o 'número da temporada' <Caso seja filme, digite '0'>"));
                 int idSerie = Integer.parseInt(JOptionPane.showInputDialog("Digite o Identificador da série <Caso seja filme, digite '0'>"));
-                int idClassificacao = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID da Classificação Indicativa"));
-                int idCategoria = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID da Categoria"));
-                int idTipoConteudo = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID do tipo de Conteudo"));
+//               int idClassificacao = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID da Classificação Indicativa"));
+//               int idCategoria = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID da Categoria"));
+//               int idTipoConteudo = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID do tipo de Conteudo"));
+
+                String resultado = consultarClassificacao();
+                int idClassificacao = Integer.parseInt(JOptionPane.showInputDialog( resultado + "\n" +"Insira o ID da Classificação Indicativa"));
+
+                resultado = consultarCategoria();
+                int idCategoria = Integer.parseInt(JOptionPane.showInputDialog(resultado + "\n" +"Insira o ID da Categoria"));
+
+                resultado = consultarTipoConteudo();
+                int idTipoConteudo = Integer.parseInt(JOptionPane.showInputDialog(resultado +"Insira o ID do tipo de Conteudo"));
+
                 String nome = JOptionPane.showInputDialog("Digite o nome do Filme ou do Epísódio: ");
                 String nomeSerie = JOptionPane.showInputDialog("Digite o nome da serie, caso exista: ");
                 String sinopse = JOptionPane.showInputDialog("Insira a sinopse do filme ou do episódio: ");
@@ -425,8 +435,10 @@ public class FlixJanelaPrincipal implements ActionListener {
                 System.exit(0);
 
             } else if (e.getSource() == helpMenuItem) {
-                JOptionPane.showMessageDialog(null, "Olá, sou um projeto desenvolvido para cadastro!\n" +
-                        "Em caso de dúvidas, abrir chamado para contato@flix");
+                JOptionPane.showMessageDialog(null, "Olá, sou um projeto desenvolvido para cadastro e manutenção de STREAMING!\n" +
+                        "Projeto Integrador SENAC121\n" +
+                        "João Marcos Mendes\n" +
+                        "dev.joaomendes@gmail.com");
             } else {
                 JOptionPane.showMessageDialog(null, "Opção ainda implementada!");
             }
@@ -856,23 +868,48 @@ public class FlixJanelaPrincipal implements ActionListener {
         EntityManager em = JPAUtil.getEntityManager();
         PortfolioDao portfolioDao = new PortfolioDao(em);
 
-        resultado = consultarConteudo();
+ //       resultado = consultarConteudo();
+ //       int id = Integer.parseInt(JOptionPane.showInputDialog(resultado + "\n" +
+ //               "Qual 'Conteudo' deseja alterar? <Selecione a ID> "));
 
-        int id = Integer.parseInt(JOptionPane.showInputDialog(resultado + "\n" +
-                "Qual 'Conteudo' deseja alterar? <Selecione a ID> "));
+        int id;
+        Portfolio portfolioBusca = null;
+
+        do {
+            resultado = consultarConteudo();
+            id = Integer.parseInt(JOptionPane.showInputDialog(resultado + "\n" +
+                    "Qual 'Conteúdo' deseja alterar? Insira a <ID>"));
+            portfolioBusca = portfolioDao.buscarPorId(id);
+        } while (portfolioBusca == null);
 
         //Parametros
         int idEpisodio = Integer.parseInt(JOptionPane.showInputDialog("Insira o 'número do episódio' <Caso seja filme, digite '0'>"));
         int idTemporada = Integer.parseInt(JOptionPane.showInputDialog("Insira o 'número da temporada' <Caso seja filme, digite '0'>"));
         int idSerie = Integer.parseInt(JOptionPane.showInputDialog("Digite o Identificador da série <Caso seja filme, digite '0'>"));
-        int idClassificacao = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID da Classificação Indicativa"));
-        int idCategoria = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID da Categoria"));
-        int idTipoConteudo = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID do tipo de Conteudo"));
-        String nome = JOptionPane.showInputDialog("Digite o nome do Filme ou do Epísódio: ");
-        String nomeSerie = JOptionPane.showInputDialog("Digite o nome da serie, caso exista: ");
-        String sinopse = JOptionPane.showInputDialog("Insira a sinopse do filme ou do episódio: ");
+
+        String resultado = consultarClassificacao();
+        int idClassificacao = Integer.parseInt(JOptionPane.showInputDialog( resultado + "\n" +"Insira o ID da Classificação Indicativa"));
+
+        resultado = consultarCategoria();
+        int idCategoria = Integer.parseInt(JOptionPane.showInputDialog(resultado + "\n" +"Insira o ID da Categoria"));
+
+        resultado = consultarTipoConteudo();
+        int idTipoConteudo = Integer.parseInt(JOptionPane.showInputDialog(resultado +"Insira o ID do tipo de Conteudo"));
+
+        String nome = portfolioBusca.getNome();
+        nome = JOptionPane.showInputDialog("Digite o nome do Filme ou do Epísódio: ", nome);
+
+        String nomeSerie = portfolioBusca.getNomeSerie();
+        nomeSerie = JOptionPane.showInputDialog("Digite o nome da serie, caso exista: ", nomeSerie);
+
+        String sinopse = portfolioBusca.getSinopse();
+        sinopse =  JOptionPane.showInputDialog("Insira a sinopse do filme ou do episódio: ", sinopse);
+
         String dataExpiracao = JOptionPane.showInputDialog("Insira a data de expiração: ");
-        int anoLancamento = Integer.parseInt(JOptionPane.showInputDialog("Insira o ano de lançamento: "));
+
+        int anoLancamento = portfolioBusca.getAnoLancamento();
+        anoLancamento = Integer.parseInt(JOptionPane.showInputDialog("Insira o ano de lançamento: ", anoLancamento));
+
         String duracao = JOptionPane.showInputDialog("Insira o tempo de duração");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -1065,7 +1102,7 @@ public class FlixJanelaPrincipal implements ActionListener {
 
     private static void cadastrarPerfil(int idPerfil, int idUsuario, String nickName, boolean kids_profile) {
 
-        Perfil perfil = new Perfil(idPerfil, idUsuario,  nickName, kids_profile);
+        Perfil perfil = new Perfil(idPerfil, idUsuario, nickName, kids_profile);
 
         //Conexao com o banco
         EntityManager em = JPAUtil.getEntityManager();
@@ -1121,20 +1158,20 @@ public class FlixJanelaPrincipal implements ActionListener {
 
         // passando as variáveis como parâmetro
 
-       // System.out.println(perfilDao.buscarPorId(idUsuario));
+        // System.out.println(perfilDao.buscarPorId(idUsuario));
 
-      Perfil perfilAlterar = perfilDao.buscarPorId(idPerfil);
+        Perfil perfilAlterar = perfilDao.buscarPorId(idPerfil);
 
-      perfilDao.alterarPerfil(perfilAlterar);
+        perfilDao.alterarPerfil(perfilAlterar);
 
-      perfilAlterar.setNickName(nickname);
-      perfilAlterar.setKids_profile(kids_profile);
+        perfilAlterar.setNickName(nickname);
+        perfilAlterar.setKids_profile(kids_profile);
 
-      //valida a transação
-      em.getTransaction().commit();
+        //valida a transação
+        em.getTransaction().commit();
 
-      //fecha a conexao com o banco
-      em.close();
+        //fecha a conexao com o banco
+        em.close();
     }
 
 }
